@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .clearfix{zoom:1;}
+        .clearfix:after{ content:"."; display:block; height:0; clear:both; overflow:hidden; visibility:visible}
+        ul, li {
+            margin: 0;
+            padding:0;
+        }
+        ul.items li {
+            list-style: none;
+            float: left;
+            line-height: 30px;
+            padding-right: 10px;
+            position: relative;
+        }
+        #txtSearchKey {
+            width: 200px;
+            height: 25px;
+        }
+        .btn {
+            width: 100px;
+            height: 40px;
+            margin-top: 20px;
+            margin-left: 50px;
+        }
+        .tt-dataset {
+            list-style-type: none;
+            max-height: 320px;
+            padding: 10px 0;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+        .tt-dataset p {
+            color: #999;
+            display: block;
+            height: 32px;
+            line-height: 32px;
+            font-family: "Microsoft Yahei",'Hiragino Sans GB';
+            font-size: 12px;
+            text-decoration: none;
+        }
+        .tt-dataset p.tt-cursor {
+            color: #f64400;
+            background: #f6f6f6;
+            text-decoration: none;
+        }
+    </style>
+    <link href="https://github.com/bassjobsen/typeahead.js-bootstrap-css">
+    <script src="http://cylmw.99114.com/js/common/jquery-1.8.0.min.js"></script>
+    <script src="http://twitter.github.io/typeahead.js/js/handlebars.js"></script>
+    <script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+</head>
+<body>
+    <h1>当前站点：test.com</h1>
+    <ul class="items clearfix">
+        <li>label</li>
+        <li>
+            <input id="txtSearchKey" type="text" name="siteName"  placeholder="请输入您感兴趣的内容" >
+        </li>
+    </ul>
+    <input type="button" class="btn" value="保存">
+    <script>
+        (function($){
+            var persons = new Bloodhound({  
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('siteName'), //服务端返回的json中， Person Name对应的字段叫personName   
+                queryTokenizer: Bloodhound.tokenizers.whitespace,         
+                remote:{   
+                    url: '/demo/data.json?siteName=%QUERY',  //'%QUERY' 将被用户输入的值代替  
+                    filter: function(resp){ //服务端未必直接以json array方式返回搜索结果。如果不是的话，指定一下搜索结果在json中的路径。  
+                            return resp;  
+                    },
+                    wildcard: '%QUERY'                   
+                }  
+                
+            });  
+            persons.initialize();  
+            $('#txtSearchKey').typeahead(null,  
+            {  
+                name: 'thePersons', //其实没什么用，只是用来构建生成的dom元素的css class名  
+                display: 'siteName', //选择好结果后，输入框里显示的字段  
+                source: persons.ttAdapter(), //请照抄  
+                
+                templates: { //这个函数决定下拉列表中的每一行怎么渲染。   
+                        suggestion: Handlebars.compile('<p>ID:{{siteName}} - name:{{siteName}}</p>')  //这是个模板，里面的{{xxx}}中的xxx是服务端所返回JSON数据中所对应的字段。下文会说明Handlebars的角色.   
+                }
+            }).on('typeahead:selected',function(evt,datum){  
+                console.log(evt)
+                console.log(datum)
+            });         
+        })(jQuery)
+        
+        //js 点击搜索按钮请求
+        $(".btn").on("click",function(){
+            
+        })
+    </script>
+</body>
+</html>
